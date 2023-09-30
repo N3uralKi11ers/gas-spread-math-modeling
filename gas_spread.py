@@ -3,7 +3,7 @@ from models import Gas, EvacuationMap
 import time
 
 
-def update_gas_filling(gas: Gas, evaluation_map: EvacuationMap, num_iters: int):
+def update_gas_filling(gas: Gas, evaluation_map: EvacuationMap, num_iters: int, diagonal_spread: bool = False):
     
     def pprint(mat):
         for i in mat:
@@ -11,7 +11,12 @@ def update_gas_filling(gas: Gas, evaluation_map: EvacuationMap, num_iters: int):
     
     def get_neighbours(x, y):
         res = []
-        for xx, yy in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
+        neighbours = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+        
+        if diagonal_spread:
+            neighbours += [(x+1, y+1), (x-1, y+1), (x+1, y-1), (x-1, y-1)]
+        
+        for xx, yy in neighbours:
             if 0 <= xx < len(evaluation_map.ev_map[0]) and 0 <= yy < len(evaluation_map.ev_map) and evaluation_map.ev_map[yy][xx] == 0:
                 res.append((xx, yy))
         return res
