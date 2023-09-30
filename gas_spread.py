@@ -1,13 +1,16 @@
+import copy
 from typing import List
-from models import Gas, EvacuationMap
-import time
+from models import Gas, EvacuationMap, EvacuationMapTimeSeries, BaseElement
 
 
-def update_gas_filling(gas: Gas, evaluation_map: EvacuationMap, num_iters: int, diagonal_spread: bool = False):
+def update_gas_filling(
+    gases: List[Gas], 
+    evacuation_map: EvacuationMap, 
+    num_iters: int, 
+    diagonal_spread: bool = False
+) -> EvacuationMapTimeSeries:
     
-    def pprint(mat):
-        for i in mat:
-            print(i)
+    _maps = EvacuationMapTimeSeries(maps_series=[])
     
     def get_neighbours(x, y):
         res = []
@@ -16,22 +19,28 @@ def update_gas_filling(gas: Gas, evaluation_map: EvacuationMap, num_iters: int, 
         if diagonal_spread:
             neighbours += [(x+1, y+1), (x-1, y+1), (x+1, y-1), (x-1, y-1)]
         
-        for xx, yy in neighbours:
-            if 0 <= xx < len(evaluation_map.ev_map[0]) and 0 <= yy < len(evaluation_map.ev_map) and evaluation_map.ev_map[yy][xx] == 0:
-                res.append((xx, yy))
+        for i, j in neighbours:
+            if 0 <= i < len(evacuation_map.ev_map[0]) and 0 <= j < len(evacuation_map.ev_map) \
+                and evacuation_map.ev_map[j][i] == BaseElement.free:
+                neighbour_pos = (i, j)
+                res.append(neighbour_pos)
         return res
     
-    queue = [(gas.pos.x, gas.pos.y)]
+    queue = []
+    
+    for gas in gases:
+        gas_pos = (gas.pos.x, gas.pos.y)
+        queue.append(gas_pos)
     
     for _ in range(num_iters):
         for _ in range(len(queue)):
             first_el = queue.pop(0)
-            evaluation_map.ev_map[first_el[1]][first_el[0]] = 3
+            evacuation_map.ev_map[first_el[1]][first_el[0]] = BaseElement.gas
             queue += get_neighbours(first_el[0], first_el[1])
         
-        # print(evaluation_map.ev_map)
-        pprint(evaluation_map.ev_map)
-        print()
-        time.sleep(1.0)
+        updated_evacuation_map = copy.deepcopy(evacuation_map)
+        _maps.maps_series.append(updated_evacuation_map)
+    
+    return _maps
 
     
