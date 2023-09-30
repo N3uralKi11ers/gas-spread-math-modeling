@@ -7,7 +7,8 @@ def update_gas_filling(
     gases: List[Gas], 
     evacuation_map: EvacuationMap, 
     num_iters: int, 
-    diagonal_spread: bool = False
+    diagonal_spread: bool = False,
+    break_if_full: bool = False,
 ) -> EvacuationMapTimeSeries:
     
     _maps = EvacuationMapTimeSeries(maps_series=[])
@@ -33,7 +34,12 @@ def update_gas_filling(
         queue.append(gas_pos)
     
     for _ in range(num_iters):
-        for _ in range(len(queue)):
+        _queue_len = len(queue)
+        
+        if not _queue_len and break_if_full:
+            return _maps
+        
+        for _ in range(_queue_len):
             first_el = queue.pop(0)
             evacuation_map.ev_map[first_el[1]][first_el[0]] = BaseElement.gas
             queue += get_neighbours(first_el[0], first_el[1])
