@@ -63,6 +63,9 @@ class EvacuationMapTimeSeries(BaseModel):
     class Config:
         from_attributes = True
 
+class GasSpreadLayers(BaseModel):
+    layers: List[List[Pos]]
+
 class BaseSettings(BaseModel):
     person: Person
     gases: List[Gas]
