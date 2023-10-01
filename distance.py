@@ -51,6 +51,37 @@ def find_route(
     return []
 
 
+def find_matrix(
+    start_pos: Pos,
+    end_pos: Pos,
+    evacuation_map: EvacuationMap
+) -> List[List[int]]:
+    matrix = evacuation_map.to_array()
+    start = start_pos.to_tuple_yx()
+    end = end_pos.to_tuple_yx()
+    
+    rows = len(matrix)
+    cols = len(matrix[0])
+    
+
+    visited = [[False for _ in range(cols)] for _ in range(rows)]
+    shortest_path = [[float('inf') for _ in range(cols)] for _ in range(rows)]
+    shortest_path[start[0]][start[1]] = 0
+
+    path = [start]
+
+    if _dfs(matrix, start, end, visited, shortest_path, path):
+        path = path[1:] + [path[0]]
+        path = list(reversed(path))
+        
+        for i, j in path:
+            matrix[i][j] = 2
+            
+        return matrix
+    
+    return []
+
+
 # Calculate absolute distance
 def calculate_distance(route: List[Tuple[int, int]]) -> int:
     return len(route)
