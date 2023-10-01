@@ -45,6 +45,9 @@ class BaseElement(Enum):
     person = 2
     gas = 3
 
+class Route(BaseModel):
+    points: List[Pos]
+    
 class EvacuationMap(BaseModel):
     ev_map: List[List[BaseElement]] 
     

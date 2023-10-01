@@ -1,5 +1,5 @@
 from typing import List, Tuple, Optional
-from models import EvacuationMap, Pos, BaseElement
+from models import EvacuationMap, Pos, BaseElement, Route
 
 def _dfs(matrix, start, end, visited, shortest_path, path):
     rows = len(matrix)
@@ -27,7 +27,7 @@ def find_route(
     start_pos: Pos,
     end_pos: Pos,
     evacuation_map: EvacuationMap
-):
+) -> Route:
     
     matrix = evacuation_map.to_array()
     start = start_pos.to_tuple_yx()
@@ -46,15 +46,17 @@ def find_route(
     if _dfs(matrix, start, end, visited, shortest_path, path):
         path = path[1:] + [path[0]]
         path = list(reversed(path))
-        return path
+        return Route(points=[Pos(x=p[1], y=p[0]) for p in path])
     
     return []
 
 
+# Calculate absolute distance
 def calculate_distance(route: List[Tuple[int, int]]) -> int:
     return len(route)
 
 
+# Calculate relative distance
 def calculate_weighted_distance(start_pos: Pos, end_pos: Pos, evacuation_map: EvacuationMap) -> int:
     _route = find_route(start_pos, end_pos, evacuation_map)
     return len(_route)
