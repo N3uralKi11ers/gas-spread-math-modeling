@@ -1,10 +1,16 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from enum import Enum
 
 class Pos(BaseModel):
     x: int
     y: int
+    
+    def to_tuple(self) -> Tuple[int, int]:
+        return (self.x, self.y)
+    
+    def to_tuple_yx(self) -> Tuple[int, int]:
+        return (self.y, self.x)
     
     class Config:
         from_attributes = True
@@ -40,12 +46,17 @@ class BaseElement(Enum):
     gas = 3
 
 class EvacuationMap(BaseModel):
-    ev_map: List[List[int]] 
+    ev_map: List[List[BaseElement]] 
+    
+    def to_array(self) -> List[List[int]]:
+        return [[v.value for v in _map] for _map in self.ev_map]
+    
     class Config:
         from_attributes = True
 
 class EvacuationMapTimeSeries(BaseModel):
     maps_series: List[EvacuationMap]
+    
     class Config:
         from_attributes = True
 
